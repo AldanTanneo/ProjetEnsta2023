@@ -130,7 +130,7 @@ int main(int argc, char * argv[]) {
     }
 
     if (rank == SCREEN_PROCESS) {
-        std::cout << "######## Vortex simultor ########" << std::endl << std::endl;
+        std::cout << "######## Vortex simulator ########" << std::endl << std::endl;
         std::cout << "Press P for play animation " << std::endl;
         std::cout << "Press S to stop animation" << std::endl;
         std::cout << "Press right cursor to advance step by step in time" << std::endl;
