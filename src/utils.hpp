@@ -1,6 +1,9 @@
 #ifndef _UTILS_HPP_
 #define _UTILS_HPP_
 
+#include <iostream>
+
+// color utilities
 namespace term_colours {
     constexpr const char * RESET = "\x1B[0m";
 
@@ -55,11 +58,11 @@ namespace term_colours {
 #else
   // Debugging macro
     #define DEBUG(args, ...)                                                                       \
-        __VA_OPT__(std::cout << term_colours::CYAN << term_colours::BOLD << "[" __FILE__ ":"       \
+        __VA_OPT__(std::cerr << term_colours::CYAN << term_colours::BOLD << "[" __FILE__ ":"       \
                              << __FUNCTION__ << ":" << __LINE__ << "] "                            \
                              << term_colours::DEFAULT_FOREGROUND << __VA_ARGS__                    \
                              << term_colours::NO_BOLD << std::endl;)                               \
-        std::cout << term_colours::CYAN << term_colours::BOLD << "[" __FILE__ ":" << __FUNCTION__  \
+        std::cerr << term_colours::CYAN << term_colours::BOLD << "[" __FILE__ ":" << __FUNCTION__  \
                   << ":" << __LINE__ << "] " << term_colours::DEFAULT_FOREGROUND                   \
                   << term_colours::NO_BOLD << (#args) << " = " << (args) << std::endl;
 #endif
