@@ -1,8 +1,8 @@
-# Configuration pour MSYS 2
+# Configuration pour Linux
 # Peut être modifié à votre convenance...
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++20
 ifdef DEBUG
-CXXFLAGS += -g -O0 -Wall -fbounds-check -pedantic -fsanitize=address -fopenmp
+CXXFLAGS += -g -O0 -Wall -fbounds-check -pedantic -fsanitize=undefined,address -fopenmp
 CXXFLAGS2 = CXXFLAGS
 else
 CXXFLAGS2 = ${CXXFLAGS} -O2 -march=native -Wall -fopenmp

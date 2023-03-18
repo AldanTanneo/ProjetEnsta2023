@@ -1,0 +1,7 @@
+# dev environment
+.clang-format
+compile_flags.txt
+
+# artifacts
+objs/*.o
+vortexSimulation.exe
