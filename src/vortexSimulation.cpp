@@ -182,28 +182,33 @@ int main(int argc, char * argv[]) {
                     animate = true;
                     DEBUG(animate, "[0] sent!");
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                    DEBUG(animate, "[0] sending STOP");
                     ui_event = UiEvent::AnimationStop;
                     ui_event.send(SIM_PROCESS, comm);
-
                     animate = false;
+                    DEBUG(animate, "[0] sent!");
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                    DEBUG(dt, "[0] sending TIMESTEP_INCREMENT");
                     ui_event = UiEvent::TimestepIncrement;
                     ui_event.send(SIM_PROCESS, comm);
-
                     dt *= 2;
+                    DEBUG(dt, "[0] sent!");
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                    DEBUG(dt, "[0] sending TIMESTEP_DECREMENT");
                     ui_event = UiEvent::TimestepDecrement;
                     ui_event.send(SIM_PROCESS, comm);
-
                     dt /= 2;
+                    DEBUG(dt, "[0] sent!");
                 } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                    DEBUG(advance, "[0] sending ADVANCE");
                     ui_event = UiEvent::Advance;
                     ui_event.send(SIM_PROCESS, comm);
-
                     advance = true;
+                    DEBUG(advance, "[0] sent!");
                 }
             }
 
+            // we don't have to receive every time
             if (animate || advance) {
                 DEBUG(animate || advance, "[0] advancing: waiting on recv()");
                 if (isMobile) {
@@ -240,7 +245,7 @@ int main(int argc, char * argv[]) {
             MPI_Iprobe(SCREEN_PROCESS, UiEvent::TAG, comm, &flag, &status);
             if (flag) {
                 ui_event.recv(SCREEN_PROCESS, comm, &status);
-                DEBUG(ui_event, "Received ui event");
+                DEBUG(ui_event, "[1] Received ui event");
                 if (ui_event == UiEvent::Advance) {
                     advance = true;
                 } else if (ui_event == UiEvent::AnimationStart) {
@@ -252,7 +257,7 @@ int main(int argc, char * argv[]) {
                 } else if (ui_event == UiEvent::TimestepDecrement) {
                     dt /= 2;
                 } else if (ui_event == UiEvent::CloseWindow) {
-                    DEBUG(rank, "breaking");
+                    DEBUG(rank, "[1] breaking");
                     break;
                 }
             }
