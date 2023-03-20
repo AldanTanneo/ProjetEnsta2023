@@ -19,9 +19,6 @@
 constexpr int SCREEN_PROCESS = 0;
 constexpr int SIM_PROCESS = 1;
 
-static char errstr[MPI_MAX_ERROR_STRING + 1] = "no error";
-static int errlen = 0;
-
 #define DISABLE_DEBUGGING // can be used to disable "DEBUG" statements
 #include "utils.hpp"
 
@@ -153,7 +150,6 @@ int main(int argc, char * argv[]) {
     MPI_Status status;
 
     if (rank == SCREEN_PROCESS) {
-        DEBUG("[0] This is the screen process");
         Graphisme::Screen myScreen({ resx, resy },
                                    { grid.getLeftBottomVertex(), grid.getRightTopVertex() });
 
@@ -210,13 +206,11 @@ int main(int argc, char * argv[]) {
 
             // we don't have to receive every time
             if (animate || advance) {
-                DEBUG(animate || advance, "[0] advancing: waiting on recv()");
                 if (isMobile) {
-                    DEBUG(isMobile, "[0] waiting for vortices");
                     vortices.recv(SIM_PROCESS, comm, &status);
+                    grid.recv(SIM_PROCESS, comm, &status);
                 }
                 cloud.recv(SIM_PROCESS, comm, &status);
-                grid.recv(SIM_PROCESS, comm, &status);
             }
 
             myScreen.clear(sf::Color::Black);
@@ -237,7 +231,6 @@ int main(int argc, char * argv[]) {
     }
 
     if (rank == SIM_PROCESS) {
-        DEBUG("[1] This is the sim process");
         int flag;
         while (ui_event != UiEvent::CloseWindow) {
             advance = false;
@@ -266,21 +259,11 @@ int main(int argc, char * argv[]) {
                 if (isMobile) {
                     cloud = Numeric::solve_RK4_movable_vortices(dt, grid, vortices, cloud);
                     vortices.send(SCREEN_PROCESS, comm);
+                    grid.send(SCREEN_PROCESS, comm);
                 } else {
                     cloud = Numeric::solve_RK4_fixed_vortices(dt, grid, cloud);
                 }
-
-                DEBUG(errstr, "[1] sending cloud");
-                int errcode = cloud.send(SCREEN_PROCESS, comm);
-
-                if (errcode != MPI_SUCCESS)
-                    MPI_Error_string(errcode, errstr, &errlen);
-                DEBUG(errstr, "[1] sending grid");
-                errcode = grid.send(SCREEN_PROCESS, comm);
-
-                if (errcode != MPI_SUCCESS)
-                    MPI_Error_string(errcode, errstr, &errlen);
-                DEBUG(errstr, "[1] sent");
+                cloud.send(SCREEN_PROCESS, comm);
             }
         }
     }
